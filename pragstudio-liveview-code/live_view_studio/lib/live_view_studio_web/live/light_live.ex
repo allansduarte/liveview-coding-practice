@@ -3,7 +3,6 @@ defmodule LiveViewStudioWeb.LightLive do
 
   def mount(_params, _session, socket) do
     socket = assign(socket, :brightness, 10)
-    IO.inspect(socket)
     {:ok, socket}
   end
 
@@ -36,8 +35,28 @@ defmodule LiveViewStudioWeb.LightLive do
       <button phx-click="on">
         <img src="images/light-on.svg">
       </button>
+
+      <div id="license">
+        <div class="card">
+        <div class="content">
+          <form phx-change="update">
+            <input type="range" min="0" max="100"
+                  name="brightness" value="<%= @brightness %>" />
+          </form>
+          <div class="amount">
+              <%= @brightness %>
+          </div>
+        </div>
+        </div>
+      </div>
     </div>
     """
+  end
+
+  def handle_event("update", %{"brightness" => brightness}, socket) do
+    brightness = String.to_integer(brightness)
+    socket = assign(socket, :brightness, brightness)
+    {:noreply, socket}
   end
 
   def handle_event("on", _, socket) do
