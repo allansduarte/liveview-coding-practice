@@ -37,17 +37,9 @@ defmodule LiveViewStudioWeb.LightLive do
       </button>
 
       <form phx-change="change-temp">
-        <input type="radio" id="3000" name="temp" value="3000"
-          <%= if 3000 == @temp, do: "checked" %> />
-        <label for="3000">3000</label>
-
-        <input type="radio" id="4000" name="temp" value="4000"
-            <%= if 4000 == @temp, do: "checked" %> />
-        <label for="4000">4000</label>
-
-        <input type="radio"id="5000" name="temp" value="5000"
-            <%= if 5000 == @temp, do: "checked" %> />
-        <label for="5000">5000</label>
+        <%= for temp <- [3000, 4000, 5000]  do %>
+          <%= temp_radio_button(temp: temp, checked: temp == @temp) %>
+        <% end %>
       </form>
 
       <div id="license">
@@ -102,6 +94,17 @@ defmodule LiveViewStudioWeb.LightLive do
     temp = String.to_integer(temp)
     socket = assign(socket, temp: temp)
     {:noreply, socket}
+  end
+
+  defp temp_radio_button(assigns) do
+    assigns = Enum.into(assigns, %{})
+
+    ~L"""
+    <input type="radio" id="<%= @temp %>"
+            name="temp" value="<%= @temp %>"
+            <%= if @checked, do: "checked" %> />
+    <label for="<%= @temp %>"><%= @temp %></label>
+    """
   end
 
   defp temp_color(3000), do: "#F1C40D"
