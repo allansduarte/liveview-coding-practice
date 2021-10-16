@@ -3,15 +3,16 @@ defmodule LiveViewStudioWeb.SearchLive do
 
   alias LiveViewStudio.Stores
 
+  @temporary_assigns [stores: []]
+
   def mount(_params, _session, socket) do
     socket =
       assign(socket,
         zip: "",
-        stores: [],
         loading: false
       )
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: @temporary_assigns}
   end
 
   def render(assigns) do

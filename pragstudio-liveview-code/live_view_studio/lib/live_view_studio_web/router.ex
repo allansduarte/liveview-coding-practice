@@ -25,7 +25,7 @@ defmodule LiveViewStudioWeb.Router do
     live "/flights", FlightsLive
     live "autocomplete", AutocompleteLive
     live "filter", FilterLive
-
+    live "/git-repo", GitRepoLive
     get "/sales", SalesController, :index
   end
 
