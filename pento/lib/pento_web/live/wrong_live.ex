@@ -1,14 +1,20 @@
 defmodule PentoWeb.WrongLive do
   use PentoWeb, :live_view
 
+  alias Pento.Accounts
+
   @start_score 0
   @start_message "Guess a number."
   @game_over_score -3
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     socket =
       socket
+      |> assign(
+        user: Accounts.get_user_by_session_token(session["user_token"]),
+        session_id: session["live_socket_id"]
+      )
       |> assign_random_number()
       |> assign_reset_game()
 
@@ -41,6 +47,11 @@ defmodule PentoWeb.WrongLive do
       %>
     </div>
     <% end %>
+
+    <pre>
+    <%= @user.email %>
+    <%= @session_id %>
+    </pre>
     """
   end
 
