@@ -3,10 +3,11 @@ defmodule Pento.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
-    field :password, :string, virtual: true, redact: true
-    field :hashed_password, :string, redact: true
-    field :confirmed_at, :naive_datetime
+    field(:email, :string)
+    field(:username, :string)
+    field(:password, :string, virtual: true, redact: true)
+    field(:hashed_password, :string, redact: true)
+    field(:confirmed_at, :naive_datetime)
 
     timestamps()
   end
@@ -30,9 +31,18 @@ defmodule Pento.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :username])
     |> validate_email()
     |> validate_password(opts)
+    |> validate_username(opts)
+  end
+
+  defp validate_username(opts) do
+    changeset
+    |> unique_constraint(:username)
+    |> validate_required([:username])
+    |> validate_length(:username, min: 6, max: 12)
+    |> unsafe_validate_unique(:username, Pento.Repo)
   end
 
   defp validate_email(changeset) do

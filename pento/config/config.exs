@@ -10,6 +10,10 @@ import Config
 config :pento,
   ecto_repos: [Pento.Repo]
 
+config :pento, Pento.Mailer,
+  adapter: Swoosh.Adapters.Gmail,
+  access_token: System.fetch_env!("GMAIL_API_ACCESS_TOKEN")
+
 # Configures the endpoint
 config :pento, PentoWeb.Endpoint,
   url: [host: "localhost"],

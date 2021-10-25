@@ -8,7 +8,7 @@ defmodule Pento.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"MyApp", "contact@example.com"})
+      |> from({"MyApp", "allan.sduarte@gmail.com"})
       |> subject(subject)
       |> text_body(body)
 
