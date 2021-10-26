@@ -34,10 +34,10 @@ defmodule Pento.Accounts.User do
     |> cast(attrs, [:email, :password, :username])
     |> validate_email()
     |> validate_password(opts)
-    |> validate_username(opts)
+    |> validate_username()
   end
 
-  defp validate_username(opts) do
+  defp validate_username(changeset) do
     changeset
     |> unique_constraint(:username)
     |> validate_required([:username])
