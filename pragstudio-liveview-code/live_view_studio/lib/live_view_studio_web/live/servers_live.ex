@@ -27,7 +27,7 @@ defmodule LiveViewStudioWeb.ServersLive do
               to: Routes.live_path(
                 @socket,
                 __MODULE__,
-                id: server.id
+                name: server.name
               ),
               replace: true,
               class: if server == @selected_server, do: "active"
@@ -79,6 +79,7 @@ defmodule LiveViewStudioWeb.ServersLive do
     """
   end
 
+  @impl true
   def handle_params(%{"id" => id}, _url, socket) do
     id = String.to_integer(id)
 
@@ -93,6 +94,20 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_params(%{"name" => name}, _url, socket) do
+    server = Servers.get_by!(name: name)
+
+    socket =
+      assign(socket,
+        selected_server: server,
+        page_title: "What's up #{server.name}?"
+      )
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_params(_, _url, socket) do
     {:noreply, socket}
   end

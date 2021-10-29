@@ -28,6 +28,7 @@ defmodule LiveViewStudioWeb.Router do
     live "/git-repo", GitRepoLive
     live "/servers", ServersLive
     get "/sales", SalesController, :index
+    live "/paginate", PaginateLive
   end
 
   # Other scopes may use custom stacks.

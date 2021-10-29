@@ -8,6 +8,8 @@ defmodule LiveViewStudio.Servers do
 
   alias LiveViewStudio.Servers.Server
 
+  def get_by!(opts), do: Repo.get_by!(Server, opts)
+
   @doc """
   Returns the list of servers.
   ## Examples
