@@ -4,7 +4,6 @@ defmodule LiveViewStudioWeb.VehiclesLive do
   alias LiveViewStudio.Vehicles
 
   def mount(_params, _session, socket) do
-    IO.inspect Vehicles.count_vehicles()
     {:ok,
      assign(
        socket,
