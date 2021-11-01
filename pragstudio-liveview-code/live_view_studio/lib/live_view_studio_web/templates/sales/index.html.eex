@@ -1,5 +1,0 @@
-<h1>Sales Stuff</h1>
-
-<%= live_render(@conn, LiveViewStudioWeb.SalesDashboardLive) %>
-
-<%= live_render(@conn, LiveViewStudioWeb.LicenseLive) %>

@@ -1,0 +1,16 @@
+<LiveViewStudioWeb.HeaderComponent.header
+                   title="Volunteer Check-In"
+                   subtitle={@recent_activity} />
+
+<div id="checkin">
+  <%= live_component LiveViewStudioWeb.VolunteerFormComponent,
+                     id: :new %>
+
+  <div id="volunteers" phx-update="prepend">
+    <%= for volunteer <- @volunteers do %>
+      <%= live_component LiveViewStudioWeb.VolunteerComponent,
+                         volunteer: volunteer,
+                         id: volunteer.id  %>
+    <% end %>
+  </div>
+</div>
