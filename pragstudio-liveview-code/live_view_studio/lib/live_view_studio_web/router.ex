@@ -27,6 +27,7 @@ defmodule LiveViewStudioWeb.Router do
     live "filter", FilterLive
     live "/git-repo", GitRepoLive
     live "/servers", ServersLive
+    live "/servers/new", ServersLive, :new
     get "/sales", SalesController, :index
     live "/paginate", PaginateLive
     live "/vehicles", VehiclesLive

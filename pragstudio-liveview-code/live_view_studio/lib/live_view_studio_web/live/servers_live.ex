@@ -2,84 +2,17 @@ defmodule LiveViewStudioWeb.ServersLive do
   use LiveViewStudioWeb, :live_view
 
   alias LiveViewStudio.Servers
+  alias LiveViewStudio.Servers.Server
 
   def mount(_params, _session, socket) do
     servers = Servers.list_servers()
 
-    socket =
-      assign(socket,
-        servers: servers,
-        selected_server: hd(servers)
-      )
+    socket = assign(socket, servers: servers)
 
     {:ok, socket}
   end
 
-  def render(assigns) do
-    ~L"""
-    <h1>Servers</h1>
-    <div id="servers">
-      <div class="sidebar">
-        <nav>
-          <%= for server <- @servers do %>
-            <div>
-              <%= live_patch link_body(server),
-              to: Routes.live_path(
-                @socket,
-                __MODULE__,
-                name: server.name
-              ),
-              replace: true,
-              class: if server == @selected_server, do: "active"
-              %>
-            </div>
-          <% end %>
-        </nav>
-      </div>
-      <div class="main">
-        <div class="wrapper">
-          <div class="card">
-            <div class="header">
-              <h2><%= @selected_server.name %></h2>
-              <span class="<%= @selected_server.status %>">
-                <%= @selected_server.status %>
-              </span>
-            </div>
-            <div class="body">
-              <div class="row">
-                <div class="deploys">
-                  <img src="/images/deploy.svg">
-                  <span>
-                    <%= @selected_server.deploy_count %> deploys
-                  </span>
-                </div>
-                <span>
-                  <%= @selected_server.size %> MB
-                </span>
-                <span>
-                  <%= @selected_server.framework %>
-                </span>
-              </div>
-              <h3>Git Repo</h3>
-              <div class="repo">
-                <%= @selected_server.git_repo %>
-              </div>
-              <h3>Last Commit</h3>
-              <div class="commit">
-                <%= @selected_server.last_commit_id %>
-              </div>
-              <blockquote>
-                <%= @selected_server.last_commit_message %>
-              </blockquote>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    """
-  end
-
-  @impl true
+  # No changes required to this "handle_params" clause.
   def handle_params(%{"id" => id}, _url, socket) do
     id = String.to_integer(id)
 
@@ -94,30 +27,188 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_params(%{"name" => name}, _url, socket) do
-    server = Servers.get_by!(name: name)
+  # This "handle_params" clause needs to assign socket data
+  # based on whether the action is "new" or not.
+  def handle_params(_params, _url, socket) do
+    if socket.assigns.live_action == :new do
+      # The live_action is "new", so the form is being
+      # displayed. Therefore, assign an empty changeset
+      # for the form. Also don't show the selected
+      # server in the sidebar which would be confusing.
 
-    socket =
-      assign(socket,
-        selected_server: server,
-        page_title: "What's up #{server.name}?"
-      )
+      changeset = Servers.change_server(%Server{})
 
-    {:noreply, socket}
+      socket =
+        assign(socket,
+          selected_server: nil,
+          changeset: changeset
+        )
+
+      {:noreply, socket}
+    else
+      # The live_action is NOT "new", so the form
+      # is NOT being displayed. Therefore, don't assign
+      # an empty changeset. Instead, just select the
+      # first server in list. This previously happened
+      # in "mount", but since "handle_params" is always
+      # invoked after "mount", we decided to select the
+      # default server here instead of in "mount".
+
+      socket =
+        assign(socket,
+          selected_server: hd(socket.assigns.servers)
+        )
+
+      {:noreply, socket}
+    end
   end
 
-  @impl true
-  def handle_params(_, _url, socket) do
-    {:noreply, socket}
+  # "render" now needs to check the value of "live_action" and
+  # display a form if the action is "new". Otherwise, it displays
+  # the selected server's details same as before.
+  def render(assigns) do
+    ~L"""
+    <h1>Servers</h1>
+    <div id="servers">
+      <div class="sidebar">
+        <nav>
+          <%= live_patch "New Server",
+                 to: Routes.servers_path(@socket, :new),
+                 class: "button" %>
+
+          <%= for server <- @servers do %>
+            <%= live_patch link_body(server),
+                  to: Routes.live_path(
+                    @socket,
+                    __MODULE__,
+                    id: server.id
+                  ),
+                  class: (if server == @selected_server, do: "active") %>
+          <% end %>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="wrapper">
+          <%= if @live_action == :new do %>
+            <%= f = form_for @changeset, "#",
+                      phx_submit: "save" %>
+              <div class="field">
+                <%= label f , :name %>
+                <%= text_input f, :name, autocomplete: "off" %>
+                <%= error_tag f, :name %>
+              </div>
+
+              <div class="field">
+                <%= label f, :framework %>
+                <%= text_input f, :framework, autocomplete: "off" %>
+                <%= error_tag f, :framework %>
+              </div>
+
+              <div class="field">
+                <%= label f, :size, "Size (MB)" %>
+                <%= number_input f, :size, autocomplete: "off" %>
+                <%= error_tag f, :size %>
+              </div>
+
+              <div class="field">
+                <%= label f, :git_repo, "Git Repo" %>
+                <%= text_input f, :git_repo, autocomplete: "off" %>
+                <%= error_tag f, :git_repo %>
+              </div>
+
+              <%= submit "Save", phx_disable_with: "Saving..." %>
+
+              <%= live_patch "Cancel",
+                  to: Routes.live_path(@socket, __MODULE__),
+                  class: "cancel" %>
+              </form>
+          <% else %>
+            <div class="card">
+              <div class="header">
+                <h2><%= @selected_server.name %></h2>
+                <span class="<%= @selected_server.status %>">
+                  <%= @selected_server.status %>
+                </span>
+              </div>
+              <div class="body">
+                <div class="row">
+                  <div class="deploys">
+                    <img src="/images/deploy.svg">
+                    <span>
+                      <%= @selected_server.deploy_count %> deploys
+                    </span>
+                  </div>
+                  <span>
+                    <%= @selected_server.size %> MB
+                  </span>
+                  <span>
+                    <%= @selected_server.framework %>
+                  </span>
+                </div>
+                <h3>Git Repo</h3>
+                <div class="repo">
+                  <%= @selected_server.git_repo %>
+                </div>
+                <h3>Last Commit</h3>
+                <div class="commit">
+                  <%= @selected_server.last_commit_id %>
+                </div>
+                <blockquote>
+                  <%= @selected_server.last_commit_message %>
+                </blockquote>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  # This is a new function that handles the "save" event.
+  def handle_event("save", %{"server" => params}, socket) do
+    case Servers.create_server(params) do
+      {:ok, server} ->
+        # Prepend newly-minted server to list.
+
+        socket =
+          update(
+            socket,
+            :servers,
+            fn servers -> [server | servers] end
+          )
+
+        # Navigate to the new server's detail page.
+        # Invokes handle_params which already gets the
+        # server and sets it as the selected server.
+
+        socket =
+          push_patch(socket,
+            to:
+              Routes.live_path(
+                socket,
+                __MODULE__,
+                id: server.id
+              )
+          )
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        # Assign errored changeset for form.
+
+        socket = assign(socket, changeset: changeset)
+        {:noreply, socket}
+    end
   end
 
   defp link_body(server) do
-    assigns = %{name: server.name}
+    assigns = %{name: server.name, status: server.status}
 
     ~L"""
-      <img src="/images/server.svg">
-      <%= @name %>
+    <span class="status <%= @status %>"></span>
+    <img src="/images/server.svg">
+    <%= @name %>
     """
   end
 end
