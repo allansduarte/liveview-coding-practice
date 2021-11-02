@@ -42,10 +42,8 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
   end
 
   def handle_event("save", %{"volunteer" => params}, socket) do
-    IO.inspect "START"
     case Volunteers.create_volunteer(params) do
       {:ok, _volunteer} ->
-        IO.inspect "CREATED"
         changeset = Volunteers.change_volunteer(%Volunteer{})
 
         socket = assign(socket, changeset: changeset)
