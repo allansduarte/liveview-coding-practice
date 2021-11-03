@@ -13,6 +13,12 @@ defmodule PentoWeb.PromoLive do
   end
 
   @impl true
+  def handle_event("save", %{"recipient" => recipient_params}, socket) do
+    :timer.sleep(1000)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event(
         "validate",
         %{"recipient" => recipient_params},
