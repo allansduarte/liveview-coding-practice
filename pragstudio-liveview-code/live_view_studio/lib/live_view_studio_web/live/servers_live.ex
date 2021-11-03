@@ -91,32 +91,33 @@ defmodule LiveViewStudioWeb.ServersLive do
         <div class="wrapper">
           <%= if @live_action == :new do %>
             <%= f = form_for @changeset, "#",
-                      phx_submit: "save" %>
+                      phx_submit: "save",
+                      phx_change: "validate" %>
               <div class="field">
                 <%= label f , :name %>
-                <%= text_input f, :name, autocomplete: "off" %>
+                <%= text_input f, :name, autocomplete: "off", phx_debounce: "2000" %>
                 <%= error_tag f, :name %>
               </div>
 
               <div class="field">
                 <%= label f, :framework %>
-                <%= text_input f, :framework, autocomplete: "off" %>
+                <%= text_input f, :framework, autocomplete: "off", phx_debounce: "2000" %>
                 <%= error_tag f, :framework %>
               </div>
 
               <div class="field">
                 <%= label f, :size, "Size (MB)" %>
-                <%= number_input f, :size, autocomplete: "off" %>
+                <%= number_input f, :size, autocomplete: "off", phx_debounce: "blur" %>
                 <%= error_tag f, :size %>
               </div>
 
               <div class="field">
                 <%= label f, :git_repo, "Git Repo" %>
-                <%= text_input f, :git_repo, autocomplete: "off" %>
+                <%= text_input f, :git_repo, autocomplete: "off", phx_debounce: "2000" %>
                 <%= error_tag f, :git_repo %>
               </div>
 
-              <%= submit "Save", phx_disable_with: "Saving..." %>
+              <%= submit "Save", phx_disable_with: "Saving...", phx_throttle: "1000" %>
 
               <%= live_patch "Cancel",
                   to: Routes.live_path(@socket, __MODULE__),
@@ -163,6 +164,18 @@ defmodule LiveViewStudioWeb.ServersLive do
       </div>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("validate", %{"server" => params}, socket) do
+    changeset =
+      %Server{}
+      |> Servers.change_server(params)
+      |> Map.put(:action, :validate)
+
+    socket = assign(socket, changeset: changeset)
+
+    {:noreply, socket}
   end
 
   # This is a new function that handles the "save" event.
