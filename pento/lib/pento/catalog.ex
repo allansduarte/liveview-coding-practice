@@ -6,7 +6,7 @@ defmodule Pento.Catalog do
   import Ecto.Query, warn: false
   alias Pento.Repo
 
-  alias Pento.Catalog.Product
+  alias Pento.Catalog.{Product, Search}
 
   @doc """
   Returns the list of products.
@@ -100,5 +100,18 @@ defmodule Pento.Catalog do
   """
   def change_product(%Product{} = product, attrs \\ %{}) do
     Product.changeset(product, attrs)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking product search changes.
+
+  ## Examples
+
+      iex> change_search(search)
+      %Ecto.Changeset{data: %Search{}}
+
+  """
+  def change_search(%Search{} = search, attrs \\ %{}) do
+    Search.changeset(search, attrs)
   end
 end

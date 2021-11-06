@@ -95,6 +95,7 @@ defmodule PentoWeb.Router do
     live "/questions/:id/show/edit", QuestionLive.Show, :edit
 
     live "/promo", PromoLive
+    live "/search", SearchLive
   end
 
   scope "/", PentoWeb do

@@ -1,0 +1,20 @@
+<div>
+  <h2><%= @title %></h2>
+
+  <.form
+    let={f}
+    for={@changeset}
+    id="product-form"
+    phx-target={@myself}
+    phx-submit="search"
+    phx-change="validate">
+  
+    <%= label f, :sku %>
+    <%= number_input f, :sku, phx_debounce: "2000" %>
+    <%= error_tag f, :sku %>
+  
+    <div>
+      <%= submit "Search", phx_disable_with: "Searching...", phx_throttle: "1000" %>
+    </div>
+  </.form>
+</div>
