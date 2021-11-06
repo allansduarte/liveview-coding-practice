@@ -25,19 +25,33 @@
     <%= number_input f, :sku %>
     <%= error_tag f, :sku %>
 
-    <div phx-drop-target={@uploads.image.ref}>
-      <%= live_file_input @uploads.image %>
-    </div>
+    <%= label f, :image %>
+    <section phx-drop-target={@uploads.image.ref}>
+    <%= live_file_input @uploads.image %>
     <%= hidden_input f, :image_upload %>
+    <%= for entry <- @uploads.image.entries do %>
+      <article class="upload-entry">
+
+        <figure>
+          <%= live_img_preview entry %>
+          <figcaption><%= entry.client_name %></figcaption>
+        </figure>
+
+        <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
+
+        <button phx-click="cancel-upload" phx-value-ref={entry.ref} phx-target={@myself} aria-label="cancel">&times;</button>
+
+        <%= for err <- upload_errors(@uploads.image, entry) do %>
+          <p class="alert alert-danger"><%= error_to_string(err) %></p>
+        <% end %>
+
+      </article>
+    <% end %>
+
+    </section>
   
     <div>
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>
-
-    <%= for entry <- @uploads.image.entries do %>
-      <p>
-        <%= entry.client_name %> - <%= entry.progress %>%
-      </p>
-    <% end %>
   </.form>
 </div>
