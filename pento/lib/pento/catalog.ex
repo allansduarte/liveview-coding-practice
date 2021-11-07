@@ -8,6 +8,11 @@ defmodule Pento.Catalog do
 
   alias Pento.Catalog.{Product, Search}
 
+  def list_products_with_user_ratings(user) do
+    Product.Query.with_user_ratings(user)
+    |> Repo.all()
+  end
+
   @doc """
   Returns the list of products.
 
