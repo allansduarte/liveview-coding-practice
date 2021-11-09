@@ -36,4 +36,7 @@ defmodule PentoWeb.DemographicLive.FormComponent do
   defp assign_changeset(%{assigns: %{demographic: demographic}} = socket) do
     assign(socket, :changeset, Survey.change_demographic(demographic))
   end
+
+  defp genders_option, do: Demographic.genders()
+  defp education_level_options, do: Demographic.education_levels()
 end

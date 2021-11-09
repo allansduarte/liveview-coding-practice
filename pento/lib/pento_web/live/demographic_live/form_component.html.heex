@@ -9,13 +9,21 @@
             id="demographic-form"
             phx-target={@myself}
             phx-submit="save">
+
         <%= label f, :gender %>
-        <%= select f, :gender, ["female", "male", "other", "prefer not to say"] %>
+        <%= select f, :gender, genders_option() %>
         <%= error_tag f, :gender %>
+
+        <%= label f, :education_level %>
+        <%= select f, :education_level, education_level_options() %>
+        <%= error_tag f, :education_level %>
+
         <%= label f, :year_of_birth %>
         <%= select f, :year_of_birth, Enum.reverse(1940..2020)%>
         <%= error_tag f, :year_of_birth %>
+
         <%= hidden_input f, :user_id %>
+
         <%= submit "Save", phx_disable_with: "Saving..." %>
         </.form>
     </section>
