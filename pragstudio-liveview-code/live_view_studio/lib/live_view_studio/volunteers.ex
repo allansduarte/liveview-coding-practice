@@ -12,6 +12,10 @@ defmodule LiveViewStudio.Volunteers do
     Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, "volunteers")
   end
 
+  def toggle_status_volunteer(%Volunteer{} = volunteer) do
+    update_volunteer(volunteer, %{checked_out: !volunteer.checked_out})
+  end
+
   @doc """
   Returns the list of volunteers.
 
