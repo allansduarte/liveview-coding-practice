@@ -6,6 +6,8 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    connected?(socket) && Servers.subscribe()
+
     servers = Servers.list_servers()
 
     socket = assign(socket, servers: servers)
@@ -48,6 +50,40 @@ defmodule LiveViewStudioWeb.ServersLive do
 
       {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_info({:server_created, server}, socket) do
+    socket =
+      update(
+        socket,
+        :servers,
+        fn servers -> [server | servers] end
+      )
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:server_updated, server}, socket) do
+    socket =
+      if server.id == socket.assigns.selected_server.id do
+        assign(socket, selected_server: server)
+      else
+        socket
+      end
+
+    socket =
+      update(socket, :servers, fn servers ->
+        for s <- servers do
+          case s.id == server.id do
+            true -> server
+            _ -> s
+          end
+        end
+      end)
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -169,13 +205,6 @@ defmodule LiveViewStudioWeb.ServersLive do
     case Servers.create_server(params) do
       {:ok, server} ->
         socket =
-          update(
-            socket,
-            :servers,
-            fn servers -> [server | servers] end
-          )
-
-        socket =
           push_patch(socket,
             to:
               Routes.live_path(
@@ -196,19 +225,7 @@ defmodule LiveViewStudioWeb.ServersLive do
   @impl true
   def handle_event("toggle-status", %{"id" => id}, socket) do
     server = Servers.get_server!(id)
-    {:ok, server} = Servers.toggle_status_server(server)
-
-    socket =
-      socket
-      |> assign(selected_server: server)
-      |> update(:servers, fn servers ->
-        for s <- servers do
-          case s.id == server.id do
-            true -> server
-            _ -> s
-          end
-        end
-      end)
+    {:ok, _server} = Servers.toggle_status_server(server)
 
     {:noreply, socket}
   end
