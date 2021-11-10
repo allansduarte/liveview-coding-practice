@@ -8,8 +8,10 @@ defmodule LiveViewStudio.Volunteers do
 
   alias LiveViewStudio.Volunteers.Volunteer
 
+  @topic inspect(__MODULE__)
+
   def subscribe do
-    Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, "volunteers")
+    Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, @topic)
   end
 
   def toggle_status_volunteer(%Volunteer{} = volunteer) do
@@ -26,7 +28,7 @@ defmodule LiveViewStudio.Volunteers do
 
   """
   def list_volunteers do
-    Repo.all(from v in Volunteer, order_by: [desc: v.id])
+    Repo.all(from(v in Volunteer, order_by: [desc: v.id]))
   end
 
   @doc """
@@ -61,18 +63,20 @@ defmodule LiveViewStudio.Volunteers do
     %Volunteer{}
     |> Volunteer.changeset(attrs)
     |> Repo.insert()
+    |> broadcast(:volunteer_created)
   end
 
   def update_volunteer(%Volunteer{} = volunteer, attrs) do
-    volunteer
-    |> Volunteer.changeset(attrs)
-    |> Repo.update()
+      volunteer
+      |> Volunteer.changeset(attrs)
+      |> Repo.update()
+      |> broadcast(:volunteer_updated)
   end
 
   def broadcast({:ok, volunteer}, event) do
     Phoenix.PubSub.broadcast(
       LiveViewStudio.PubSub,
-      "volunteers",
+      @topic,
       {event, volunteer}
     )
 
