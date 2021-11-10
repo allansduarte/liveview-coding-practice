@@ -4,6 +4,7 @@ defmodule LiveViewStudioWeb.ServersLive do
   alias LiveViewStudio.Servers
   alias LiveViewStudio.Servers.Server
 
+  @impl true
   def mount(_params, _session, socket) do
     servers = Servers.list_servers()
 
@@ -12,7 +13,7 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:ok, socket}
   end
 
-  # No changes required to this "handle_params" clause.
+  @impl true
   def handle_params(%{"id" => id}, _url, socket) do
     id = String.to_integer(id)
 
@@ -27,15 +28,9 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:noreply, socket}
   end
 
-  # This "handle_params" clause needs to assign socket data
-  # based on whether the action is "new" or not.
+  @impl true
   def handle_params(_params, _url, socket) do
     if socket.assigns.live_action == :new do
-      # The live_action is "new", so the form is being
-      # displayed. Therefore, assign an empty changeset
-      # for the form. Also don't show the selected
-      # server in the sidebar which would be confusing.
-
       changeset = Servers.change_server(%Server{})
 
       socket =
@@ -46,14 +41,6 @@ defmodule LiveViewStudioWeb.ServersLive do
 
       {:noreply, socket}
     else
-      # The live_action is NOT "new", so the form
-      # is NOT being displayed. Therefore, don't assign
-      # an empty changeset. Instead, just select the
-      # first server in list. This previously happened
-      # in "mount", but since "handle_params" is always
-      # invoked after "mount", we decided to select the
-      # default server here instead of in "mount".
-
       socket =
         assign(socket,
           selected_server: hd(socket.assigns.servers)
@@ -63,9 +50,7 @@ defmodule LiveViewStudioWeb.ServersLive do
     end
   end
 
-  # "render" now needs to check the value of "live_action" and
-  # display a form if the action is "new". Otherwise, it displays
-  # the selected server's details same as before.
+  @impl true
   def render(assigns) do
     ~L"""
     <h1>Servers</h1>
@@ -127,9 +112,10 @@ defmodule LiveViewStudioWeb.ServersLive do
             <div class="card">
               <div class="header">
                 <h2><%= @selected_server.name %></h2>
-                <span class="<%= @selected_server.status %>">
+                <button phx-click="toggle-status" phx-value-id="<%= @selected_server.id %>" class="<%= @selected_server.status %>"
+                        phx-disable-with="Saving...">
                   <%= @selected_server.status %>
-                </span>
+                </button>
               </div>
               <div class="body">
                 <div class="row">
@@ -178,22 +164,16 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:noreply, socket}
   end
 
-  # This is a new function that handles the "save" event.
+  @impl true
   def handle_event("save", %{"server" => params}, socket) do
     case Servers.create_server(params) do
       {:ok, server} ->
-        # Prepend newly-minted server to list.
-
         socket =
           update(
             socket,
             :servers,
             fn servers -> [server | servers] end
           )
-
-        # Navigate to the new server's detail page.
-        # Invokes handle_params which already gets the
-        # server and sets it as the selected server.
 
         socket =
           push_patch(socket,
@@ -208,11 +188,29 @@ defmodule LiveViewStudioWeb.ServersLive do
         {:noreply, socket}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        # Assign errored changeset for form.
-
         socket = assign(socket, changeset: changeset)
         {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_event("toggle-status", %{"id" => id}, socket) do
+    server = Servers.get_server!(id)
+    {:ok, server} = Servers.toggle_status_server(server)
+
+    socket =
+      socket
+      |> assign(selected_server: server)
+      |> update(:servers, fn servers ->
+        for s <- servers do
+          case s.id == server.id do
+            true -> server
+            _ -> s
+          end
+        end
+      end)
+
+    {:noreply, socket}
   end
 
   defp link_body(server) do
