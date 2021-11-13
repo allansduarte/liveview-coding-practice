@@ -8,6 +8,11 @@ defmodule Pento.Catalog do
 
   alias Pento.Catalog.{Product, Search}
 
+  def products_with_average_ratings do
+    Product.Query.with_average_ratings()
+    |> Repo.all()
+  end
+
   def list_products_with_user_ratings(user) do
     Product.Query.with_user_ratings(user)
     |> Repo.all()
