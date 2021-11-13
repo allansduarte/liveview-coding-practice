@@ -76,6 +76,12 @@ defmodule PentoWeb do
     end
   end
 
+  def chart_live do
+    quote do
+      unquote(chart_helpers())
+    end
+  end
+
   defp view_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)
@@ -91,6 +97,12 @@ defmodule PentoWeb do
       import PentoWeb.ErrorHelpers
       import PentoWeb.Gettext
       alias PentoWeb.Router.Helpers, as: Routes
+    end
+  end
+
+  defp chart_helpers do
+    quote do
+      import PentoWeb.BarChart
     end
   end
 
