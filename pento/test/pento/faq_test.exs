@@ -35,7 +35,12 @@ defmodule Pento.FaqTest do
 
     test "update_question/2 with valid data updates the question" do
       question = question_fixture()
-      update_attrs = %{answer: "some updated answer", question: "some updated question", vote_count: 43}
+
+      update_attrs = %{
+        answer: "some updated answer",
+        question: "some updated question",
+        vote_count: 43
+      }
 
       assert {:ok, %Question{} = question} = Faq.update_question(question, update_attrs)
       assert question.answer == "some updated answer"
