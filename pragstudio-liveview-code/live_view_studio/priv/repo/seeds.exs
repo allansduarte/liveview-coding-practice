@@ -1,21 +1,5 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     LiveViewStudio.Repo.insert!(%LiveViewStudio.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
-
 alias LiveViewStudio.Repo
 alias LiveViewStudio.Boats.Boat
-alias LiveViewStudio.Stores.Store
-alias LiveViewStudio.GitRepos.GitRepo
-alias LiveViewStudio.Servers.Server
-alias LiveViewStudio.Donations.Donation
 
 %Boat{
   model: "1760 Retriever Jon Deluxe",
@@ -161,157 +145,7 @@ alias LiveViewStudio.Donations.Donation
 }
 |> Repo.insert!()
 
-# Store seeds
-%Store{
-  name: "Downtown Helena",
-  street: "312 Montana Avenue",
-  phone_number: "406-555-0100",
-  city: "Helena, MT",
-  zip: "59602",
-  open: true,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "East Helena",
-  street: "227 Miner's Lane",
-  phone_number: "406-555-0120",
-  city: "Helena, MT",
-  zip: "59602",
-  open: false,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "Westside Helena",
-  street: "734 Lake Loop",
-  phone_number: "406-555-0130",
-  city: "Helena, MT",
-  zip: "59602",
-  open: true,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "Downtown Denver",
-  street: "426 Aspen Loop",
-  phone_number: "303-555-0140",
-  city: "Denver, CO",
-  zip: "80204",
-  open: true,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "Midtown Denver",
-  street: "7 Broncos Parkway",
-  phone_number: "720-555-0150",
-  city: "Denver, CO",
-  zip: "80204",
-  open: false,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "Denver Stapleton",
-  street: "965 Summit Peak",
-  phone_number: "303-555-0160",
-  city: "Denver, CO",
-  zip: "80204",
-  open: true,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-%Store{
-  name: "Denver West",
-  street: "501 Mountain Lane",
-  phone_number: "720-555-0170",
-  city: "Denver, CO",
-  zip: "80204",
-  open: true,
-  hours: "8am - 10pm M-F"
-}
-|> Repo.insert!()
-
-# Git Repo seeds
-
-%GitRepo{
-  name: "elixir",
-  url: "https://github.com/elixir-lang/elixir",
-  owner_login: "elixir-lang",
-  owner_url: "https://github.com/elixir-lang",
-  fork: false,
-  stars: 16900,
-  language: "elixir",
-  license: "apache"
-}
-|> Repo.insert!()
-
-%GitRepo{
-  name: "phoenix",
-  url: "https://github.com/phoenixframework/phoenix",
-  owner_login: "phoenixframework",
-  owner_url: "https://github.com/phoenixframework",
-  fork: false,
-  stars: 15200,
-  language: "elixir",
-  license: "mit"
-}
-|> Repo.insert!()
-
-%GitRepo{
-  name: "phoenix_live_view",
-  url: "https://github.com/phoenixframework/phoenix_live_view",
-  owner_login: "phoenixframework",
-  owner_url: "https://github.com/phoenixframework",
-  fork: false,
-  stars: 3000,
-  language: "elixir",
-  license: "mit"
-}
-|> Repo.insert!()
-
-%GitRepo{
-  name: "phoenix_live_view",
-  url: "https://github.com/clarkware/phoenix_live_view",
-  owner_login: "clarkware",
-  owner_url: "https://github.com/clarkware",
-  fork: true,
-  stars: 0,
-  language: "elixir",
-  license: "mit"
-}
-|> Repo.insert!()
-
-%GitRepo{
-  name: "rails",
-  url: "https://github.com/rails/rails",
-  owner_login: "rails",
-  owner_url: "https://github.com/rails",
-  fork: false,
-  stars: 45600,
-  language: "ruby",
-  license: "mit"
-}
-|> Repo.insert!()
-
-%GitRepo{
-  name: "ruby",
-  url: "https://github.com/ruby/ruby",
-  owner_login: "ruby",
-  owner_url: "https://github.com/ruby",
-  fork: false,
-  stars: 16800,
-  language: "ruby",
-  license: "bsdl"
-}
-|> Repo.insert!()
+alias LiveViewStudio.Servers.Server
 
 %Server{
   name: "dancing-lizard",
@@ -416,6 +250,24 @@ donation_items = [
   {"🍪", "Cookies"}
 ]
 
+now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+prepare = fn struct, now ->
+  struct
+  |> Map.from_struct()
+  |> Map.drop([:__meta__, :id])
+  |> Map.merge(%{inserted_at: now, updated_at: now})
+end
+
+insert_all = fn entries, schema ->
+  entries
+  |> Enum.chunk_every(100)
+  |> Enum.map(&(Repo.insert_all(schema, &1) |> elem(0)))
+  |> Enum.sum()
+end
+
+alias LiveViewStudio.Donations.Donation
+
 for _i <- 1..100 do
   {emoji, item} = Enum.random(donation_items)
 
@@ -425,8 +277,9 @@ for _i <- 1..100 do
     quantity: Enum.random(1..20),
     days_until_expires: Enum.random(1..30)
   }
-  |> Repo.insert!()
+  |> prepare.(now)
 end
+|> insert_all.(Donation)
 
 alias LiveViewStudio.Vehicles.Vehicle
 
@@ -436,5 +289,46 @@ for _i <- 1..1000 do
     model: Faker.Vehicle.model(),
     color: Faker.Color.name()
   }
-  |> Repo.insert!()
+  |> prepare.(now)
 end
+|> insert_all.(Vehicle)
+
+pizza_toppings = [
+  "🍗 Chicken",
+  "🌿 Basil",
+  "🧄 Garlic",
+  "🥓 Bacon",
+  "🧀 Cheese",
+  "🐠 Salmon",
+  "🍤 Shrimp",
+  "🥦 Broccoli",
+  "🧅 Onions",
+  "🍅 Tomatoes",
+  "🍄 Mushrooms",
+  "🍍 Pineapples",
+  "🍆 Eggplants",
+  "🥑 Avocados",
+  "🌶 Peppers",
+  "🍕 Pepperonis"
+]
+
+now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+alias LiveViewStudio.PizzaOrders.PizzaOrder
+
+for _i <- 1..1000 do
+  [topping1, topping2] =
+    pizza_toppings
+    |> Enum.shuffle()
+    |> Enum.take(2)
+
+  pizza = "#{Faker.Pizza.size()} #{Faker.Pizza.style()} with
+     #{topping1} and #{topping2}"
+
+  %PizzaOrder{
+    username: Faker.Internet.user_name(),
+    pizza: pizza
+  }
+  |> prepare.(now)
+end
+|> insert_all.(PizzaOrder)
