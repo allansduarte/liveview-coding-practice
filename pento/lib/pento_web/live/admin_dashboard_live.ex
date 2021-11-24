@@ -1,6 +1,9 @@
 defmodule PentoWeb.AdminDashboardLive do
   use PentoWeb, :live_view
 
+  alias PentoWeb.SurveyResultsLive
+  alias PentoWeb.Endpoint
+
   @survey_topic "survey_results"
   @user_activity_topic "user_activity"
 
@@ -11,6 +14,16 @@ defmodule PentoWeb.AdminDashboardLive do
      socket
      |> assign(:survey_results_component_id, "survey-results")
      |> assign(:user_activity_component_id, "user-activity")}
+  end
+
+  @impl true
+  def handle_info(%{event: "rating_created"}, socket) do
+    send_update(
+      SurveyResultsLive,
+      id: socket.assigns.survey_results_component_id
+    )
+
+    {:noreply, socket}
   end
 
   @impl true
