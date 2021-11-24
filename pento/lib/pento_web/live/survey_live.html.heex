@@ -9,10 +9,10 @@
     <%= live_component @socket,
         PentoWeb.RatingLive.IndexComponent,
         products: @products,
-        current_user: @current_user%>
+        current_user: @current_user %>
 <% else %>
     <%= live_component @socket,
         PentoWeb.DemographicLive.FormComponent,
         user: @current_user,
-        id: "demographic-form-#{@current_user.id}"%>
+        id: "demographic-form-#{@current_user.id}" %>
 <% end %>
