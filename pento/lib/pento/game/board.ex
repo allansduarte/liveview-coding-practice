@@ -1,4 +1,7 @@
 defmodule Pento.Game.Board do
+
+  alias Pento.Game.Shape
+
   defstruct active_pento: nil,
             completed_pentos: [],
             palette: [],
@@ -22,4 +25,8 @@ defmodule Pento.Game.Board do
 
   defp palette(:all), do: [:i, :l, :y, :n, :p, :w, :u, :v, :s, :f, :x, :t]
   defp palette(:small), do: [:u, :v, :p]
+
+  def to_shape(board) do
+    Shape.__struct__(color: :purple, name: :board, points: board.points)
+  end
 end

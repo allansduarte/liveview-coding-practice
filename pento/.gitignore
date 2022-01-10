@@ -35,3 +35,6 @@ npm-debug.log
 dev.env
 
 /priv/static/images/
+
+# Ignore generated js hook files for components
+assets/js/_hooks/

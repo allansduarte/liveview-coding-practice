@@ -1,6 +1,8 @@
 defmodule PentoWeb.Router do
   use PentoWeb, :router
 
+  import Surface.Catalogue.Router
+
   import PentoWeb.UserAuth
 
   pipeline :browser do
@@ -21,6 +23,7 @@ defmodule PentoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    live "/game/:puzzle", Pento.GameLive
   end
 
   # Other scopes may use custom stacks.
@@ -109,5 +112,12 @@ defmodule PentoWeb.Router do
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :edit
     post "/users/confirm/:token", UserConfirmationController, :update
+  end
+
+  if Mix.env() == :dev do
+    scope "/" do
+      pipe_through :browser
+      surface_catalogue "/catalogue"
+    end
   end
 end
