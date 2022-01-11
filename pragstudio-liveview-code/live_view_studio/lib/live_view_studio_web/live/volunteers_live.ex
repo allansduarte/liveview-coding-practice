@@ -19,11 +19,12 @@ defmodule LiveViewStudioWeb.VolunteersLive do
 
   def handle_info({:volunteer_created, volunteer}, socket) do
     socket =
-      update(
-        socket,
+      socket
+      |> update(
         :volunteers,
         fn volunteers -> [volunteer | volunteers] end
       )
+      |> assign(recent_activity: "#{volunteer.name} checked in!")
 
     {:noreply, socket}
   end
