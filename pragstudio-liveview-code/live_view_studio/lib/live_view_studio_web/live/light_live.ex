@@ -27,10 +27,10 @@ defmodule LiveViewStudioWeb.LightLive do
       </button>
 
       <button phx-click="random">
-        Random!
+        Light Me Up!
       </button>
 
-      <button phx-click="up">
+      <button data-role="up" phx-click="up">
         <img src="images/up.svg">
         <span class="sr-only">Up</span>
       </button>
