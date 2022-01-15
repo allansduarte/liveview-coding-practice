@@ -20,7 +20,8 @@ defmodule LiveViewStudioWeb.FlightsLive do
     ~L"""
     <h1>Find a Flight</h1>
     <div id="search">
-      <form phx-submit="number-search">
+      <form id="flights-search"
+            phx-submit="number-search">
         <input type="text" name="number" value="<%= @number %>"
                placeholder="Flight Number"
           <%= if @loading, do: "readonly" %>/>
@@ -29,7 +30,9 @@ defmodule LiveViewStudioWeb.FlightsLive do
         </button>
       </form>
 
-      <form phx-change="suggest-airport" phx-submit="airport-search">
+      <form id="airport-search"
+            phx-change="suggest-airport"
+            phx-submit="airport-search">
         <input type="text" name="airport" value="<%= @airport %>"
                 list="matches" placeholder="Airport"
                 <%= if @loading, do: "readonly" %>/>
@@ -119,7 +122,7 @@ defmodule LiveViewStudioWeb.FlightsLive do
       [] ->
         socket =
           socket
-          |> put_flash(:info, "No flights matching \"#{number}\"")
+          |> put_flash(:info, "No flights matching #{number}")
           |> assign(flights: [], loading: false)
 
         {:noreply, socket}
@@ -139,7 +142,7 @@ defmodule LiveViewStudioWeb.FlightsLive do
       [] ->
         socket =
           socket
-          |> put_flash(:info, "No flights matching \"#{airport}\"")
+          |> put_flash(:info, "No flights matching #{airport}")
           |> assign(flights: [], loading: false)
 
         {:noreply, socket}
