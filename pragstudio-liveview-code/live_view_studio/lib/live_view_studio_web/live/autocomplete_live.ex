@@ -1,8 +1,8 @@
 defmodule LiveViewStudioWeb.AutocompleteLive do
   use LiveViewStudioWeb, :live_view
 
-  alias LiveViewStudio.Stores
   alias LiveViewStudio.Cities
+  alias LiveViewStudio.Stores
 
   def mount(_params, _session, socket) do
     socket =
@@ -33,7 +33,9 @@ defmodule LiveViewStudioWeb.AutocompleteLive do
         </button>
       </form>
 
-      <form phx-submit="city-search" phx-change="suggest-city">
+      <form id="city-search"
+            phx-submit="city-search"
+            phx-change="suggest-city">
         <input type="text" name="city" value="<%= @city %>"
                placeholder="City"
                autocomplete="off"
