@@ -1,5 +1,46 @@
 alias LiveViewStudio.Repo
 alias LiveViewStudio.Boats.Boat
+alias LiveViewStudio.Stores.Store
+
+%Store{
+  hours: "1",
+  name: "Downtown Denver",
+  open: true,
+  phone_number: "1234",
+  street: "Inambú",
+  zip: "80204"
+}
+|> Repo.insert!()
+
+%Store{
+  hours: "1",
+  name: "Midtown Denver",
+  open: true,
+  phone_number: "1234",
+  street: "Inambú",
+  zip: "80204"
+}
+|> Repo.insert!()
+
+%Store{
+  hours: "1",
+  name: "Denver Stapleton",
+  open: true,
+  phone_number: "1234",
+  street: "Inambú",
+  zip: "80204"
+}
+|> Repo.insert!()
+
+%Store{
+  hours: "1",
+  name: "Denver West",
+  open: true,
+  phone_number: "1234",
+  street: "Inambú",
+  zip: "80204"
+}
+|> Repo.insert!()
 
 %Boat{
   model: "1760 Retriever Jon Deluxe",
