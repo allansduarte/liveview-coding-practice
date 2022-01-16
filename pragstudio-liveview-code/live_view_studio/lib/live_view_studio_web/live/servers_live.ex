@@ -2,7 +2,6 @@ defmodule LiveViewStudioWeb.ServersLive do
   use LiveViewStudioWeb, :live_view
 
   alias LiveViewStudio.Servers
-  alias LiveViewStudio.Servers.Server
 
   @impl true
   def mount(_params, _session, socket) do
@@ -108,7 +107,7 @@ defmodule LiveViewStudioWeb.ServersLive do
           <% end %>
         </nav>
       </div>
-      <div class="main">
+      <div id="selected-server" class="main">
         <div class="wrapper">
           <%= if @live_action == :new do %>
             <%= live_component @socket,
