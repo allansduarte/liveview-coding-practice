@@ -32,7 +32,7 @@ defmodule LiveViewStudioWeb.VehiclesLive do
     ~L"""
     <h1>🚙 Vehicles 🚘</h1>
     <div id="vehicles">
-      <form phx-change="select-per-page">
+      <form id="select-per-page" phx-change="select-per-page">
         Show
         <select name="per-page">
           <%= options_for_select([5, 10, 15, 20], @options.per_page) %>
@@ -59,7 +59,7 @@ defmodule LiveViewStudioWeb.VehiclesLive do
           </thead>
           <tbody>
             <%= for vehicle <- @vehicles do %>
-              <tr>
+              <tr id="vehicle-<%= vehicle.id %>">
                 <td>
                   <%= vehicle.id %>
                 </td>
