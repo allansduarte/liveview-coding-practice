@@ -32,6 +32,67 @@ defmodule LiveViewStudioWeb.ServersLiveTest do
     assert has_element?(view, "#selected-server", first.name)
   end
 
+  test "adds valid server to list", ctx do
+    {:ok, view, _html} = live(ctx.conn, "/servers/new")
+
+    valid_attrs = %{
+      name: "valid-server",
+      framework: "elixir",
+      size: 128,
+      git_repo: "https//www.gitrepo.com"
+    }
+
+    view
+    |> form("#create-server", %{server: valid_attrs})
+    |> render_submit()
+
+    assert has_element?(view, "#servers", valid_attrs.name)
+  end
+
+  test "display live validations", ctx do
+    {:ok, view, _html} = live(ctx.conn, "/servers/new")
+
+    invalid_attrs = %{name: "invalid-server"}
+
+    view
+    |> form("#create-server", %{server: invalid_attrs})
+    |> render_submit()
+
+    assert has_element?(view, "#create-server", "can't be blank")
+  end
+
+  test "clicking status button toggles status", ctx do
+    server = create_server("valid-server")
+
+    {:ok, view, _html} = live(ctx.conn, "/servers")
+
+    status_button = "#server-#{server.id} button"
+
+    view
+    |> element(status_button, "up")
+    |> render_click()
+
+    assert has_element?(view, status_button, "down")
+  end
+
+  test "clicking cancel button back to the list servers", ctx do
+    {:ok, view, _html} = live(ctx.conn, "/servers/new")
+
+    view
+    |> element("#cancel-server", "Cancel")
+    |> render_click()
+
+    assert_patch(view, "/servers")
+  end
+
+  test "receives real-time updates", ctx do
+    {:ok, view, _html} = live(ctx.conn, "/servers")
+
+    external_server = create_server("external-valid-server")
+
+    assert has_element?(view, "#servers", external_server.name)
+  end
+
   defp create_server(name) do
     {:ok, server} =
       Servers.create_server(%{

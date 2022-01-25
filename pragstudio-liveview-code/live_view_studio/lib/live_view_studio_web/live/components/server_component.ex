@@ -5,7 +5,7 @@ defmodule LiveViewStudioWeb.ServerComponent do
 @impl true
   def render(assigns) do
     ~L"""
-    <div class="card">
+    <div class="card" id=<%= "server-#{@selected_server.id}" %>>
         <div class="header">
           <h2><%= @selected_server.name %></h2>
           <button class="<%= @selected_server.status %>"

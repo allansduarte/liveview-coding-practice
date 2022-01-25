@@ -16,7 +16,8 @@ defmodule LiveViewStudioWeb.ServerFormComponent do
       <%= f = form_for @changeset, "#",
               phx_submit: "save",
               phx_change: "validate",
-              phx_target: @myself %>
+              phx_target: @myself,
+              id: "create-server" %>
         <div class="field">
           <%= label f , :name %>
           <%= text_input f, :name, autocomplete: "off", phx_debounce: "2000" %>
@@ -45,7 +46,8 @@ defmodule LiveViewStudioWeb.ServerFormComponent do
 
         <%= live_patch "Cancel",
             to: Routes.live_path(@socket, LiveViewStudioWeb.ServersLive),
-            class: "cancel" %>
+            class: "cancel",
+            id: "cancel-server" %>
       </form>
     """
   end
