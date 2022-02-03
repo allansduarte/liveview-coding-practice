@@ -1,6 +1,19 @@
+import LineChart from "./line-chart";
 import flatpickr from "flatpickr";
 
 let Hooks = {}
+
+Hooks.LineChart = {
+    mounted() {
+        const {labels, values} = JSON.parse(this.el.dataset.chartData)
+        this.chart = new LineChart(this.el, labels, values)
+
+        this.handleEvent("new-point", ({label, value}) => {
+            console.log("Added point")
+            this.chart.addPoint(label, value)
+        })
+    }
+}
 
 Hooks.InfiniteScroll = {
     mounted() {

@@ -38,6 +38,7 @@ defmodule LiveViewStudioWeb.Router do
     live "infinte-scroll", InfiniteScrollLive
     live "/date-picker", DatePickerLive
     live "/sandbox", SandboxLive
+    live "/chart", ChartLive
   end
 
   # Other scopes may use custom stacks.
