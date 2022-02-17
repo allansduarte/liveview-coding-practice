@@ -39,6 +39,7 @@ defmodule LiveViewStudioWeb.Router do
     live "/date-picker", DatePickerLive
     live "/sandbox", SandboxLive
     live "/chart", ChartLive
+    live "/map", MapLive
   end
 
   # Other scopes may use custom stacks.
