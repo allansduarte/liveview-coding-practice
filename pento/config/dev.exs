@@ -54,7 +54,7 @@ config :pento, PentoWeb.Endpoint,
 
 # Watch static and templates for browser reloading.
 config :pento, PentoWeb.Endpoint,
-  reloadable_compilers: [:gettext, :elixir, :surface],
+  reloadable_compilers: [:gettext, :elixir],
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",

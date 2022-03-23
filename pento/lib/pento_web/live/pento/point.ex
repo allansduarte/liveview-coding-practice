@@ -1,31 +1,22 @@
 defmodule PentoWeb.Pento.Point do
-  use Surface.Component
+  use Phoenix.Component
 
   @width 10
 
-  @doc "The X axis"
-  prop x, :integer
-
-  @doc "The Y axis"
-  prop y, :integer
-
-  @doc "The fill"
-  prop fill, :string
-
-  @doc "The name"
-  prop name, :string
-
-  def render(assigns) do
-    ~F"""
+  def draw(assigns) do
+    ~H"""
     <use
       xlink:href="#point"
       x={ convert @x }
       y={ convert @y }
-      fill={ @fill } />
+      fill={ @fill }
+      phx-click="pick"
+      phx-value-name={ @name }
+      phx-target="#game" />
     """
   end
 
   defp convert(axis) do
-    axis * @width + 2 * @width
+    (axis-1) * @width + 2 * @width
   end
 end

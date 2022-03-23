@@ -1,17 +1,17 @@
 defmodule PentoWeb.Pento.GameLive do
-  use Surface.LiveView
+  use PentoWeb, :live_view
 
-  alias PentoWeb.Pento.{Board, Title}
+  alias PentoWeb.Pento.Board
 
   def mount(%{"puzzle" => puzzle}, _session, socket) do
     {:ok, assign(socket, puzzle: puzzle)}
   end
 
   def render(assigns) do
-    ~F"""
+    ~H"""
     <section class="container">
-      <Title message="Welcome to Pento!" />
-      <Board puzzle={ @puzzle } id="game" />
+    <h1>Welcome to Pento!</h1>
+    <.live_component module={Board} puzzle={ @puzzle } id="game" />
     </section>
     """
   end

@@ -1,23 +1,26 @@
 defmodule PentoWeb.Pento.Board do
-  use Surface.LiveComponent
+  use PentoWeb, :live_component
 
   import PentoWeb.Pento.Colors
 
   alias PentoWeb.Pento.{Canvas, Palette, Shape}
-  alias Pento.Game.{Board}
-
-  prop puzzle, :string
+  alias Pento.Game.{Board, Pentomino}
 
   def render(assigns) do
-    ~F"""
-    <div id={ @id }>
-      <Canvas viewBox="0 0 200 70">
-        <Shape
-          points={ @shape.points }
-          fill={ color(@shape.color) }
-          name={ @shape.name } />
-      </Canvas>
+    ~H"""
+    <div id={ @id } phx-window-keydown="key" phx-target={ @myself }>
+      <Canvas.draw viewBox="0 0 200 70">
+        <%= for shape <- @shapes do %>
+          <Shape.draw
+          points={ shape.points }
+          fill= { color(shape.color, Board.active?(@board, shape.name) ) }
+          name={ shape.name } />
+        <% end %>
+      </Canvas.draw>
       <hr/>
+      <Palette.draw
+        shape_names= { @board.palette }
+        id="palette" />
     </div>
     """
   end
@@ -25,30 +28,34 @@ defmodule PentoWeb.Pento.Board do
   def update(%{puzzle: puzzle, id: id}, socket) do
     {:ok,
      socket
-     |> assign_id(id)
-     |> assign_puzzle(puzzle)
+     |> assign_params(id, puzzle)
      |> assign_board()
-     |> assign_shape()}
+     |> assign_shapes()}
   end
 
-  def assign_id(socket, id) do
-    assign(socket, id: id)
-  end
-
-  def assign_puzzle(socket, puzzle) do
-    assign(socket, puzzle: puzzle)
+  def assign_params(socket, id, puzzle) do
+    assign(socket, id: id, puzzle: puzzle)
   end
 
   def assign_board(%{assigns: %{puzzle: puzzle}} = socket) do
+    active = Pentomino.new(name: :p, location: {3, 2})
+
+    completed = [
+      Pentomino.new(name: :u, rotation: 270, location: {1, 2}),
+      Pentomino.new(name: :v, rotation: 90, location: {4, 2})
+    ]
+
     board =
       puzzle
       |> String.to_existing_atom()
       |> Board.new()
+      |> Map.put(:completed_pentos, completed)
+      |> Map.put(:active_pento, active)
 
     assign(socket, board: board)
   end
 
-  def assign_shape(%{assigns: %{board: board}} = socket) do
-    assign(socket, shape: Board.to_shape(board))
+  def assign_shapes(%{assigns: %{board: board}} = socket) do
+    assign(socket, shapes: [Board.to_shape(board)])
   end
 end

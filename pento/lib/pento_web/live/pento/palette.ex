@@ -1,35 +1,31 @@
 defmodule PentoWeb.Pento.Palette do
-  use Surface.Component
+  use Phoenix.Component
 
   import PentoWeb.Pento.Colors
 
   alias PentoWeb.Pento.{Shape, Canvas}
   alias Pento.Game.Pentomino
 
-  prop shape_names, :list
-
-  def mount(_params, _session, socket) do
-    {:ok, socket, temporary_assigns: [shapes: []]}
-  end
-
-  def render(assigns) do
-    ~F"""
-    <Canvas viewBox="0 0 500 125">
-      <Shape :for={ shape <- @shapes}
-        points={ shape.points }
-        fill={ color(shape.color) }
-        name={ shape.name } />
-    </Canvas>
-    """
-  end
-
-  def update(%{shape_names: shape_names}, socket) do
+  def draw(%{shape_names: shape_names} = assigns) do
     shapes =
       shape_names
       |> Enum.with_index()
       |> Enum.map(&pentomino/1)
 
-    {:ok, assign(socket, shapes: shapes)}
+    assigns = assign(assigns, shapes: shapes)
+
+    ~H"""
+    <div id="palette">
+    <Canvas.draw viewBox="0 0 500 125">
+    <%= for shape <- @shapes do %>
+    <Shape.draw
+    points={ shape.points }
+    fill={ color(shape.color) }
+    name={ shape.name } />
+    <% end %>
+    </Canvas.draw>
+    </div>
+    """
   end
 
   defp pentomino({name, i}) do

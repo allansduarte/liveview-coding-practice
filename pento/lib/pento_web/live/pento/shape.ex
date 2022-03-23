@@ -1,19 +1,17 @@
 defmodule PentoWeb.Pento.Shape do
-  use Surface.Component
+  use Phoenix.Component
 
   alias PentoWeb.Pento.Point
 
-  prop points, :list
-  prop fill, :string
-  prop name, :string
-
-  def render(assigns) do
-    ~F"""
-    <Point :for={ {x, y} <- @points}
-      x={ x }
-      y={ y }
-      fill={ @fill }
-      name={ @name } />
+  def draw(assigns) do
+    ~H"""
+    <%= for {x, y} <- @points do %>
+    <Point.draw
+    x={ x }
+    y={ y }
+    fill={ @fill }
+    name={ @name } />
+    <% end %>
     """
   end
 end

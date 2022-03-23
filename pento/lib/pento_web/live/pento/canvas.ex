@@ -1,16 +1,13 @@
 defmodule PentoWeb.Pento.Canvas do
-  use Surface.Component
+  use Phoenix.Component
 
-  prop viewBox, :string
-  slot default, required: true
-
-  def render(assigns) do
-    ~F"""
+  def draw(assigns) do
+    ~H"""
     <svg viewBox={ @viewBox }>
-      <defs>
-        <rect id="point" width="10" height="10" />
-      </defs>
-      <slot/>
+    <defs>
+    <rect id="point" width="10" height="10" />
+    </defs>
+    <%= render_slot(@inner_block) %>
     </svg>
     """
   end

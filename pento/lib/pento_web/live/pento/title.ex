@@ -1,11 +1,8 @@
 defmodule PentoWeb.Pento.Title do
-  use Surface.Component
-
-  @doc "The message"
-  prop message, :string, required: true
+  use Phoenix.Component
 
   def render(assigns) do
-    ~F"""
+    ~H"""
     <h1>{ @message }</h1>
     """
   end

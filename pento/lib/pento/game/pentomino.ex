@@ -1,5 +1,5 @@
 defmodule Pento.Game.Pentomino do
-  alias Pento.Game.Point
+  alias Pento.Game.{Point, Shape}
 
   @names [:i, :l, :y, :n, :p, :w, :u, :v, :s, :f, :x, :t]
   @default_location {8, 8}
